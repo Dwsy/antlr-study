@@ -46,28 +46,43 @@ public class Json {
             """;
 
     public static void main(String[] args) throws IOException {
+        String path = System.getProperty("user.dir");
+        CharStream input = CharStreams.fromFileName(path + "/Hellotest/JsonTest/industry.json");
 
-        JSONParser.ObjContext objContext = parse(json);
+        JSONParser.ObjContext objContext = parse(input);
+        JSONObject object = new JSONObject(objContext);
+        JSONArray RECORDS = object.getJSONArray("RECORDS");
 
-        JSONObject root = new JSONObject(objContext);
+        Integer recordsSize = RECORDS.getSize();
+        for (Integer i = 0; i < recordsSize; i++) {
+            JSONObject record = RECORDS.getJSONObject(i);
+            String name = record.getString("name");
+            String id = record.getString("_id");
+            System.out.println(id + "：" + name);
+        }
+        System.out.println(recordsSize);
 
-        System.out.println("--------");
-        System.out.println(root.getString("string"));
-        System.out.println("--------");
-
-
-        System.out.println("--------");
-        System.out.println(root.getBoolean("booleant"));
-        System.out.println(root.getBoolean("booleanf"));
-        System.out.println(root.getString("booleant"));
-        System.out.println(root.getString("booleanf"));
-        System.out.println("--------");
-        System.out.println("--------");
-        System.out.println(root.getBoolean("booleantStr"));
-        System.out.println(root.getBoolean("booleanfStr"));
-        System.out.println(root.getString("booleantStr"));
-        System.out.println(root.getString("booleanfStr"));
-        System.out.println("--------");
+//        JSONParser.ObjContext objContext = parse(json);
+//
+//        JSONObject root = new JSONObject(objContext);
+//
+//        System.out.println("--------");
+//        System.out.println(root.getString("string"));
+//        System.out.println("--------");
+//
+//
+//        System.out.println("--------");
+//        System.out.println(root.getBoolean("booleant"));
+//        System.out.println(root.getBoolean("booleanf"));
+//        System.out.println(root.getString("booleant"));
+//        System.out.println(root.getString("booleanf"));
+//        System.out.println("--------");
+//        System.out.println("--------");
+//        System.out.println(root.getBoolean("booleantStr"));
+//        System.out.println(root.getBoolean("booleanfStr"));
+//        System.out.println(root.getString("booleantStr"));
+//        System.out.println(root.getString("booleanfStr"));
+//        System.out.println("--------");
 
 //
 //        StringTest(root, "string");
@@ -112,6 +127,15 @@ public class Json {
 
     public static JSONParser.ObjContext parse(String json) {
         JSONLexer lexer = new JSONLexer(CharStreams.fromString(json));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        JSONParser parser = new JSONParser(tokens);
+//        ParseTree tree = parser.json();
+//        System.out.println(tree.toStringTree(parser));
+        return parser.obj();
+    }
+
+    public static JSONParser.ObjContext parse(CharStream charStream) {
+        JSONLexer lexer = new JSONLexer(charStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         JSONParser parser = new JSONParser(tokens);
 //        ParseTree tree = parser.json();

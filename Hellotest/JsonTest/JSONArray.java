@@ -14,6 +14,11 @@ import java.util.stream.Collectors;
 public class JSONArray {
     private List<Object> list = new LinkedList<>();
 
+    private Integer size;
+
+    public Integer getSize() {
+        return list.size();
+    }
 
     private final static AtomicInteger atomicInteger = new AtomicInteger(0);
 
