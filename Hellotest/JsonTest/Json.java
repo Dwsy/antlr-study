@@ -9,11 +9,11 @@ public class Json {
     static final String json = """
             {
                 "string": "Hello, world!",
-                "number": 42,
+                "number": 123,
                 "boolean": true,
                 "null": null,
                 "array": [
-                1,
+                    0,
                     {
                         "property1": "value1",
                         "property2": "value2",
@@ -21,7 +21,10 @@ public class Json {
                             "hello": "world",
                             "property2": "value2"
                         }
-                    }
+                    },
+                    true,
+                    3.3,
+                    "true"
                 ],
                 "object0": {
                     "property1": "value1",
@@ -40,21 +43,37 @@ public class Json {
 
     public static void main(String[] args) throws IOException {
 
-        JSONParser.ObjContext objContext = parse();
+        JSONParser.ObjContext objContext = parse(json);
 
         JSONObject root = new JSONObject(objContext);
 
+        System.out.println("--------");
+        System.out.println(root.getInt("number"));
+        System.out.println("--------");
+
         StringTest(root, "string");
 
+
         ObjetcTest(root);
         ObjetcTest(root);
         ObjetcTest(root);
 
 
+        ArryTest(root);
+//        ArryTest(root);
+//        ArryTest(root);
+    }
+
+    private static void ArryTest(JSONObject root) {
         JSONArray array = root.getJSONArray("array");
         JSONObject object = array.getJSONObject(1);
         String string = object.getJSONObject("object1").getString("hello");
         System.out.println(string);
+
+        System.out.println(array.getInt(0));
+        System.out.println(array.getBoolean(2));
+        System.out.println(array.getDouble(3));
+        System.out.println(array.getString(4));
     }
 
     private static JSONObject ObjetcTest(JSONObject root) {
@@ -71,7 +90,7 @@ public class Json {
         System.out.println(string);
     }
 
-    public static JSONParser.ObjContext parse() {
+    public static JSONParser.ObjContext parse(String json) {
         JSONLexer lexer = new JSONLexer(CharStreams.fromString(json));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         JSONParser parser = new JSONParser(tokens);

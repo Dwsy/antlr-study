@@ -1,5 +1,7 @@
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class JSONObject {
@@ -15,6 +18,8 @@ public class JSONObject {
 
     private final Map<String, JSONObject> objectMap = new HashMap<>();
     private final Map<String, JSONArray> arrMap = new HashMap<>();
+
+    private final static AtomicInteger atomicInteger = new AtomicInteger(0);
 
 
     protected JSONObject(JSONParser.ObjContext objCtx) {
@@ -30,7 +35,7 @@ public class JSONObject {
 //            System.out.printf("key: %s\n", key);
         });
 //        System.out.println("keyMap.size(): " + keyMap.size());
-        System.out.printf("time: %d\n", System.currentTimeMillis() - currentTimeMillis);
+        System.out.printf("time: %d,(%s)\n", System.currentTimeMillis() - currentTimeMillis, atomicInteger.incrementAndGet());
     }
 
     public JSONObject getJSONObject(String key) {
@@ -44,7 +49,11 @@ public class JSONObject {
             if (jsonObject != null) {
                 return jsonObject;
             }
-            jsonObject = new JSONObject(value.obj());
+            JSONParser.ObjContext obj = value.obj();
+//            if (obj == null) {
+//                return null;
+//            }
+            jsonObject = new JSONObject(obj);
             objectMap.put(key, jsonObject);
             return jsonObject;
         }
@@ -71,14 +80,28 @@ public class JSONObject {
         if (value == null) {
             return null;
         }
-        if (value instanceof JSONParser.ValueContext ctx) {
-            String newValue = ctx.STRING().getText();
-            keyMap.put(key, newValue.substring(1, newValue.length() - 1));
+        if (value instanceof JSONParser.ValueContext valueContext) {
+
+            List<ParseTree> children = valueContext.children;
+            if (children.size() == 1) {
+                if (children.get(0) instanceof TerminalNode terminalNode) {
+                    String text = terminalNode.getText();
+                    keyMap.put(key, text);
+                }
+            } else {
+                String newValue = valueContext.STRING().getText();
+                keyMap.put(key, newValue.substring(1, newValue.length() - 1));
+            }
+
+
+//            ctx.children.size()
+
         }
         return (String) keyMap.get(key);
     }
 
     public int getInt(String key) {
+
         String value = getString(key);
         if (value == null || "".equals(value)) {
             return 0;
@@ -100,6 +123,14 @@ public class JSONObject {
             return 0.0;
         }
         return Double.parseDouble(value);
+    }
+
+    public boolean getBoolean(String key) {
+        String value = getString(key);
+        if (value == null || "".equals(value)) {
+            return false;
+        }
+        return Boolean.parseBoolean(value);
     }
 
     public JSONArray getJSONArray(String key) {
