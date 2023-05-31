@@ -10,7 +10,10 @@ public class Json {
             {
                 "string": "Hello, world!",
                 "number": 123,
-                "boolean": true,
+                "booleant": true,
+                "booleanf": false,
+                "booleantStr": "true",
+                "booleanfStr": "false",
                 "null": null,
                 "array": [
                     0,
@@ -24,7 +27,8 @@ public class Json {
                     },
                     true,
                     3.3,
-                    "true"
+                    "true",
+                    false
                 ],
                 "object0": {
                     "property1": "value1",
@@ -48,18 +52,33 @@ public class Json {
         JSONObject root = new JSONObject(objContext);
 
         System.out.println("--------");
-        System.out.println(root.getInt("number"));
+        System.out.println(root.getString("string"));
         System.out.println("--------");
 
-        StringTest(root, "string");
 
+        System.out.println("--------");
+        System.out.println(root.getBoolean("booleant"));
+        System.out.println(root.getBoolean("booleanf"));
+        System.out.println(root.getString("booleant"));
+        System.out.println(root.getString("booleanf"));
+        System.out.println("--------");
+        System.out.println("--------");
+        System.out.println(root.getBoolean("booleantStr"));
+        System.out.println(root.getBoolean("booleanfStr"));
+        System.out.println(root.getString("booleantStr"));
+        System.out.println(root.getString("booleanfStr"));
+        System.out.println("--------");
 
-        ObjetcTest(root);
-        ObjetcTest(root);
-        ObjetcTest(root);
-
-
-        ArryTest(root);
+//
+//        StringTest(root, "string");
+//
+//
+//        ObjetcTest(root);
+//        ObjetcTest(root);
+//        ObjetcTest(root);
+//
+//
+//        ArryTest(root);
 //        ArryTest(root);
 //        ArryTest(root);
     }
@@ -74,6 +93,7 @@ public class Json {
         System.out.println(array.getBoolean(2));
         System.out.println(array.getDouble(3));
         System.out.println(array.getString(4));
+        System.out.println(array.getBoolean(5));
     }
 
     private static JSONObject ObjetcTest(JSONObject root) {

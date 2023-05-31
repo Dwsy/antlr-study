@@ -75,7 +75,11 @@ public class JSONObject {
         return null;
     }
 
-    public String getString(String key) {
+    public String getString(String key){
+        return getString(key, false);
+
+    }
+    public String getString(String key,boolean getBoolean) {
         Object value = keyMap.get(key);
         if (value == null) {
             return null;
@@ -86,6 +90,19 @@ public class JSONObject {
             if (children.size() == 1) {
                 if (children.get(0) instanceof TerminalNode terminalNode) {
                     String text = terminalNode.getText();
+                    if (text.equals("null")) {
+                        return null;
+                    }
+                    if (text.equals("true")) {
+                        if (getBoolean)
+                            return "true";
+                        else return "null";
+                    }
+                    if (text.equals("false")) {
+                        if (getBoolean)
+                            return "false";
+                        else return "null";
+                    }
                     keyMap.put(key, text);
                 }
             } else {
@@ -126,7 +143,7 @@ public class JSONObject {
     }
 
     public boolean getBoolean(String key) {
-        String value = getString(key);
+        String value = getString(key,true);
         if (value == null || "".equals(value)) {
             return false;
         }
